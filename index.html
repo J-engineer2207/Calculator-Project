@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+
+        /* Reset margin and center everything */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Calculator container */
+        .calculator {
+            background-color: #222;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            border: 2px solid #888;
+        }
+
+        /* Display area */
+        .display {
+            background-color: #000;
+            color: #0f0;
+            font-size: 2em;
+            text-align: right;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            height: 50px;
+            overflow: hidden;
+        }
+
+        /* Button grid */
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Each button */
+        button {
+            flex: 1 0 21%;
+            font-size: 1.2em;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #444;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #666;
+        }
+
+        /* Clear and Equals button larger */
+        button.clear {
+            flex: 1 0 44%;
+            background-color: #ff4d4d;
+        }
+
+        /* Updated equals button to span full row */
+        button.equals {
+            flex: 1 0 100%; /* Takes full width */
+            background-color: #4caf50;
+        }
+
+    </style>
+</head>
+<body>
+    
+<div id="calculator">
+    <!--Create the display-->
+    <div class="display">0</div>
+
+    <!--Row 1 buttons-->
+    <div>
+        <button class="clear">C</button>
+        <button class="backspace">⌫</button>
+        <button class="operator" data-operator="/">÷</button>
+    </div>
+
+    <!--Row 2 buttons-->
+    <div>
+        <button class="number">7</button>
+        <button class="number">8</button>
+        <button class="number">9</button>
+        <button class="operator" data-operator="*">×</button>
+    </div>
+
+    <!--Row 3 buttons-->
+    <div>
+        <button class="number">4</button>
+        <button class="number">5</button>
+        <button class="number">6</button>
+        <button class="operator" data-operator="-">−</button>
+      </div>
+
+      <!--Row 4 buttons-->
+      <div>
+        <button class="number">1</button>
+        <button class="number">2</button>
+        <button class="number">3</button>
+        <button class="operator" data-operator="+">+</button>
+      </div>
+
+      <!--Row 5 buttons-->
+      <div>
+        <button class="number">0</button>
+        <button class="number">.</button>
+        <button class="equals">=</button>
+      </div>
+
+
+</div>
+
+
+
+
+<script>
+    // Initialize first number, second number, operator, result
+    let operand1 = "";
+    let operand2 = "";
+    let operator = "";
+    let result = null;
+
+    const display = document.querySelector('.display');
+    const buttons = document.querySelectorAll('button');
+
+    // Math operation functions
+    function add(a, b) {
+        return a + b;
+    }
+
+    function subtract(a, b) {
+        return a - b;
+    }
+
+    function multiply(a, b) {
+        return a * b;
+    }
+
+    function divide(a, b) {
+        if (b === 0) {
+            return "Stupid: that won't work 😂";
+        } else {
+            return a / b;
+        }
+    }
+
+    // Master operate function
+    function operate(operator, a, b) {
+        a = parseFloat(a);
+        b = parseFloat(b);
+
+        switch (operator) {
+            case "+":
+                return add(a, b);
+            case "-":
+                return subtract(a, b);
+            case "*":
+                return multiply(a, b);
+            case "/":
+                return divide(a, b);
+            default:
+                return "Invalid operator";
+        }
+    }
+
+    // Listen to button clicks
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            const value = button.textContent;
+
+            // Clear
+            if (button.classList.contains('clear')) {
+                operand1 = "";
+                operand2 = "";
+                operator = "";
+                result = null;
+                display.textContent = "0";
+                return;
+            }
+
+            // Backspace
+            if (button.classList.contains('backspace')) {
+                display.textContent = display.textContent.slice(0, -1) || "0";
+                return;
+            }
+
+            // Equals
+            if (button.classList.contains('equals')) {
+                if (operand1 && operator && operand2) {
+                    result = operate(operator, operand1, operand2);
+                    display.textContent = result;
+                    // Prepare for next operation
+                    operand1 = result;
+                    operand2 = "";
+                    operator = "";
+                }
+                return;
+            }
+
+            // Operator
+            if (button.classList.contains('operator')) {
+                operator = button.getAttribute("data-operator");
+                operand1 = display.textContent;
+                display.textContent = "";
+                return;
+            }
+
+            // Numbers and dot
+            // Numbers and decimal
+            if (!operator) {
+                // Prevent multiple decimals in operand1
+                if (value === "." && operand1.includes(".")) return;
+                operand1 += value;
+                display.textContent = operand1;
+                } else {
+                    // Prevent multiple decimals in operand2
+                    if (value === "." && operand2.includes(".")) return;
+                    operand2 += value;
+                    display.textContent = operand2;
+                }
+
+        });
+    });
+</script>
+
+</body>
+</html>
